@@ -1,5 +1,7 @@
 import { Alert } from '../types';
 import AlertList from '../components/AlertList';
+import { Container, Typography, Box, Button } from '@mui/material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
 interface AllAlertsPageProps {
   alerts: Alert[];
@@ -10,20 +12,23 @@ interface AllAlertsPageProps {
 
 export default function AllAlertsPage({ alerts, onBack, onDelete, onToggle }: AllAlertsPageProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <button
+    <Box sx={{ minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="md">
+        <Box sx={{ mb: 4 }}>
+          <Button
             onClick={onBack}
-            className="text-blue-600 hover:text-blue-700 font-medium mb-2"
+            startIcon={<ArrowBackIcon />}
+            sx={{ mb: 2 }}
           >
-            ← Back to Dashboard
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">All Alerts</h1>
-        </div>
+            Back to Dashboard
+          </Button>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            All Alerts
+          </Typography>
+        </Box>
 
         <AlertList alerts={alerts} onDelete={onDelete} onToggle={onToggle} />
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

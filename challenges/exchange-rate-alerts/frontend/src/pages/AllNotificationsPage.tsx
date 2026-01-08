@@ -1,4 +1,6 @@
 import { Notification } from '../types';
+import { Container, Typography, Box, Button, Card, CardContent, IconButton } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, CheckCircle } from '@mui/icons-material';
 
 interface AllNotificationsPageProps {
   notifications: Notification[];
@@ -12,66 +14,87 @@ export default function AllNotificationsPage({
   onAcknowledge
 }: AllNotificationsPageProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <button
+    <Box sx={{ minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="md">
+        <Box sx={{ mb: 4 }}>
+          <Button
             onClick={onBack}
-            className="text-blue-600 hover:text-blue-700 font-medium mb-2"
+            startIcon={<ArrowBackIcon />}
+            sx={{ mb: 2 }}
           >
-            ← Back to Dashboard
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">All Notifications</h1>
-        </div>
+            Back to Dashboard
+          </Button>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            All Notifications
+          </Typography>
+        </Box>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {notifications.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No notifications yet</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`border rounded-lg p-4 ${
-                    notification.acknowledged
-                      ? 'bg-gray-50 border-gray-200'
-                      : 'bg-yellow-50 border-yellow-200'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {notification.message || 'Alert triggered'}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Rate: <span className="font-mono">{notification.triggered_rate.toFixed(4)}</span>
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(notification.created_at).toLocaleString()}
-                      </p>
-                      {notification.acknowledged && notification.acknowledged_at && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          Acknowledged: {new Date(notification.acknowledged_at).toLocaleString()}
-                        </p>
+        <Card>
+          <CardContent>
+            {notifications.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography color="text.secondary">No notifications yet</Typography>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {notifications.map((notification) => (
+                  <Box
+                    key={notification.id}
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      border: '1px solid',
+                      borderColor: notification.acknowledged ? 'divider' : 'warning.main',
+                      bgcolor: notification.acknowledged ? 'background.paper' : 'rgba(245, 158, 11, 0.1)',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        borderColor: notification.acknowledged ? 'primary.main' : 'warning.light',
+                        transform: 'translateY(-2px)',
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: notification.acknowledged ? 400 : 700,
+                            mb: 1
+                          }}
+                        >
+                          {notification.message || 'Alert triggered'}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Rate: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{notification.triggered_rate.toFixed(4)}</Box>
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                          {new Date(notification.created_at).toLocaleString()}
+                        </Typography>
+                        {notification.acknowledged && notification.acknowledged_at && (
+                          <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mt: 0.5 }}>
+                            Acknowledged: {new Date(notification.acknowledged_at).toLocaleString()}
+                          </Typography>
+                        )}
+                      </Box>
+                      {!notification.acknowledged && (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={() => onAcknowledge(notification.id)}
+                          startIcon={<CheckCircle />}
+                          sx={{ ml: 2 }}
+                        >
+                          Acknowledge
+                        </Button>
                       )}
-                    </div>
-                    {!notification.acknowledged && (
-                      <button
-                        onClick={() => onAcknowledge(notification.id)}
-                        className="ml-4 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-                      >
-                        Acknowledge
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      </Container>
+    </Box>
   );
 }

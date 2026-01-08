@@ -1,4 +1,6 @@
 import { Alert } from '../types';
+import { Card, CardContent, Typography, Box, Button, Chip, IconButton } from '@mui/material';
+import { NotificationAdd as NotificationAddIcon, Delete as DeleteIcon, ToggleOff, ToggleOn } from '@mui/icons-material';
 
 interface MyAlertsSectionProps {
   alerts: Alert[];
@@ -18,101 +20,146 @@ export default function MyAlertsSection({
   const recentAlerts = alerts.slice(0, 3);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">My Alerts</h2>
-        <button
-          onClick={onCreateClick}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
-        >
-          Create Alert
-        </button>
-      </div>
-
-      {alerts.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">No alerts yet</p>
-          <button
+    <Card sx={{ height: '100%' }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <NotificationAddIcon color="primary" />
+            <Typography variant="h6">My Alerts</Typography>
+          </Box>
+          <Button
+            variant="contained"
+            size="small"
             onClick={onCreateClick}
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            sx={{ textTransform: 'none' }}
           >
-            Create your first alert
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="space-y-3">
-            {recentAlerts.map((alert) => (
-              <div
-                key={alert.id}
-                className={`border rounded-lg p-3 ${
-                  !alert.enabled ? 'bg-gray-100 border-gray-300 opacity-60' :
-                  alert.notified ? 'bg-yellow-50 border-yellow-200' :
-                  'bg-white border-gray-300'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`font-semibold ${!alert.enabled ? 'text-gray-500' : 'text-gray-900'}`}>
-                      {alert.currency_pair}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 text-xs rounded-full ${
-                        alert.direction === 'above'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {alert.direction === 'above' ? '↑' : '↓'} {alert.target_rate}
-                    </span>
-                    {!alert.enabled && (
-                      <span className="text-xs text-gray-600 bg-gray-200 px-2 py-0.5 rounded">
-                        Disabled
-                      </span>
-                    )}
-                    {alert.notified && alert.enabled && (
-                      <span className="text-xs text-orange-700 bg-orange-100 px-2 py-0.5 rounded">
-                        Triggered
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onToggle(alert.id, alert.enabled)}
-                      className={`text-xs px-2 py-1 rounded ${
-                        alert.enabled
-                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      {alert.enabled ? 'Disable' : 'Enable'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (confirm('Delete this alert?')) {
-                          onDelete(alert.id);
-                        }
-                      }}
-                      className="text-xs text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+            Create Alert
+          </Button>
+        </Box>
 
-          {alerts.length > 3 && (
-            <button
-              onClick={onViewAllClick}
-              className="mt-4 w-full py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              View All Alerts ({alerts.length})
-            </button>
-          )}
-        </>
-      )}
-    </div>
+        {alerts.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography color="text.secondary" gutterBottom>No alerts yet</Typography>
+            <Button onClick={onCreateClick} variant="text" sx={{ mt: 1 }}>
+              Create your first alert
+            </Button>
+          </Box>
+        ) : (
+          <>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              {recentAlerts.map((alert) => (
+                <Box
+                  key={alert.id}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: !alert.enabled ? 'divider' : alert.notified ? 'warning.main' : 'divider',
+                    bgcolor: !alert.enabled ? 'action.disabledBackground' : alert.notified ? 'rgba(245, 158, 11, 0.1)' : 'background.paper',
+                    opacity: !alert.enabled ? 0.6 : 1,
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flexWrap: 'wrap' }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
+                            color: !alert.enabled ? 'text.disabled' : 'text.primary'
+                          }}
+                        >
+                          {alert.currency_pair}
+                        </Typography>
+                        <Chip
+                          label={`${alert.direction === 'above' ? '↑' : '↓'} ${alert.target_rate}`}
+                          size="small"
+                          color={alert.direction === 'above' ? 'success' : 'error'}
+                          sx={{ height: 20, fontSize: '0.7rem' }}
+                        />
+                        {!alert.enabled && (
+                          <Chip
+                            label="Disabled"
+                            size="small"
+                            sx={{ height: 20, fontSize: '0.7rem', bgcolor: 'action.disabledBackground' }}
+                          />
+                        )}
+                        {alert.notified && alert.enabled && (
+                          <Chip
+                            label="Triggered"
+                            size="small"
+                            color="warning"
+                            sx={{ height: 20, fontSize: '0.7rem' }}
+                          />
+                        )}
+                      </Box>
+                      {alert.last_known_rate && (
+                        <Typography variant="caption" sx={{ display: 'block' }}>
+                          {(() => {
+                            const distance = Math.abs(((alert.last_known_rate - alert.target_rate) / alert.target_rate) * 100);
+                            const isAboveTarget = alert.last_known_rate > alert.target_rate;
+                            const reachedTarget = (alert.direction === 'above' && isAboveTarget) ||
+                                                 (alert.direction === 'below' && !isAboveTarget);
+                            return (
+                              <Box
+                                component="span"
+                                sx={{
+                                  fontWeight: 600,
+                                  color: reachedTarget ? 'warning.main' : 'info.main'
+                                }}
+                              >
+                                {reachedTarget ? '✓ Reached' : `${distance.toFixed(1)}% away`}
+                              </Box>
+                            );
+                          })()}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 0.5, ml: 1 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => onToggle(alert.id, alert.enabled)}
+                        color={alert.enabled ? 'default' : 'primary'}
+                        sx={{ padding: 0.5 }}
+                      >
+                        {alert.enabled ? <ToggleOn fontSize="small" /> : <ToggleOff fontSize="small" />}
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          if (confirm('Delete this alert?')) {
+                            onDelete(alert.id);
+                          }
+                        }}
+                        color="error"
+                        sx={{ padding: 0.5 }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+
+            {alerts.length > 0 && (
+              <Button
+                fullWidth
+                onClick={onViewAllClick}
+                sx={{ mt: 2 }}
+                variant="outlined"
+              >
+                View All Alerts ({alerts.length})
+              </Button>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

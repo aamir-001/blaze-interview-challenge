@@ -6,7 +6,7 @@ export interface Alert {
   enabled: boolean;
   notified: boolean;
   created_at: string;
-  last_rate?: number;
+  last_known_rate?: number;
 }
 
 export interface Notification {

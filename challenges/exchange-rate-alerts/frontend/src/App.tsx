@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
+import { ThemeProvider, CssBaseline, Container, Box, Typography } from '@mui/material';
 import { Alert, Notification } from './types';
+import { theme } from './theme';
 import Modal from './components/Modal';
 import AlertForm from './components/AlertForm';
 import MyAlertsSection from './components/MyAlertsSection';
 import NotificationsSection from './components/NotificationsSection';
 import LiveRatesSection from './components/LiveRatesSection';
 import AllAlertsPage from './pages/AllAlertsPage';
+import AllAlertsCardPage from './pages/AllAlertsCardPage';
 import AllNotificationsPage from './pages/AllNotificationsPage';
 
 const API_URL = 'http://localhost:5000/api';
 
-type Page = 'dashboard' | 'all-alerts' | 'all-notifications';
+type Page = 'dashboard' | 'all-alerts' | 'all-alerts-cards' | 'all-notifications';
 
 function App() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -18,6 +21,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [alertError, setAlertError] = useState<string | null>(null);
 
   const fetchAlerts = async () => {
     try {
@@ -62,12 +66,25 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(alertData),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 409) {
+          setAlertError(errorData.error || 'An identical alert already exists');
+        } else {
+          setAlertError('Failed to create alert. Please try again.');
+        }
+        return;
+      }
+
       if (response.ok) {
         await fetchAlerts();
         setIsModalOpen(false);
+        setAlertError(null);
       }
     } catch (error) {
       console.error('Failed to create alert:', error);
+      setAlertError('Failed to create alert. Please check your connection.');
     }
   };
 
@@ -132,6 +149,17 @@ function App() {
     );
   }
 
+  if (currentPage === 'all-alerts-cards') {
+    return (
+      <AllAlertsCardPage
+        alerts={alerts}
+        onBack={() => setCurrentPage('dashboard')}
+        onDelete={handleDeleteAlert}
+        onToggle={handleToggleAlert}
+      />
+    );
+  }
+
   if (currentPage === 'all-notifications') {
     return (
       <AllNotificationsPage
@@ -144,15 +172,21 @@ function App() {
 
   // Dashboard page
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Exchange Rate Alerts</h1>
-          <p className="text-gray-600 mt-2">Monitor currency rates and get notified when targets are hit</p>
-        </header>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e293b 100%)' }}>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Exchange Rate Alerts
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Monitor currency rates and get notified when targets are hit
+            </Typography>
+          </Box>
 
-        {/* Three Section Layout - Horizontal */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
+          {/* Three Section Layout - Horizontal */}
+          <div className="grid grid-cols-3 gap-8 mb-6">
           {/* Notifications Section - Left */}
           <div>
             <NotificationsSection
@@ -172,23 +206,31 @@ function App() {
             <MyAlertsSection
               alerts={alerts}
               onCreateClick={() => setIsModalOpen(true)}
-              onViewAllClick={() => setCurrentPage('all-alerts')}
+              onViewAllClick={() => setCurrentPage('all-alerts-cards')}
               onDelete={handleDeleteAlert}
               onToggle={handleToggleAlert}
             />
           </div>
         </div>
 
-        {/* Create Alert Modal */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Create New Alert"
-        >
-          <AlertForm onSubmit={handleCreateAlert} />
-        </Modal>
-      </div>
-    </div>
+          {/* Create Alert Modal */}
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setAlertError(null);
+            }}
+            title="Create New Alert"
+          >
+            <AlertForm
+              onSubmit={handleCreateAlert}
+              error={alertError}
+              onClearError={() => setAlertError(null)}
+            />
+          </Modal>
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 }
 

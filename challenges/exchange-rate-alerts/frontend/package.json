@@ -12,8 +12,14 @@
   "license": "ISC",
   "description": "Exchange Rate Alerts Frontend",
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
     "@tailwindcss/postcss": "^4.1.18",
+    "chart.js": "^4.5.1",
     "react": "^19.2.3",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.3",
     "recharts": "^3.6.0"
   },

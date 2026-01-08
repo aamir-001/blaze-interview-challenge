@@ -1,4 +1,6 @@
 import { Notification } from '../types';
+import { Card, CardContent, Typography, Box, Button, Chip, IconButton } from '@mui/material';
+import { Notifications as NotificationsIcon, CheckCircle } from '@mui/icons-material';
 
 interface NotificationsSectionProps {
   notifications: Notification[];
@@ -14,57 +16,80 @@ export default function NotificationsSection({
   const recentNotifications = notifications.slice(0, 10);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">Recent Notifications</h2>
-      </div>
+    <Card sx={{ height: '100%' }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <NotificationsIcon color="primary" />
+            <Typography variant="h6">Recent Notifications</Typography>
+          </Box>
+        </Box>
 
-      {notifications.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No notifications yet</p>
-        </div>
-      ) : (
-        <>
-          <div className="space-y-2">
-            {recentNotifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`border rounded-lg p-3 ${
-                  notification.acknowledged
-                    ? 'bg-gray-50 border-gray-200'
-                    : 'bg-yellow-50 border-yellow-200'
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {notification.message || 'Alert triggered'}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Rate: {notification.triggered_rate.toFixed(4)} • {new Date(notification.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  {!notification.acknowledged && (
-                    <button
-                      onClick={() => onAcknowledge(notification.id)}
-                      className="ml-2 text-xs text-blue-600 hover:underline"
-                    >
-                      Dismiss
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+        {notifications.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography color="text.secondary">No notifications yet</Typography>
+          </Box>
+        ) : (
+          <>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              {recentNotifications.map((notification) => (
+                <Box
+                  key={notification.id}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: notification.acknowledged ? 'divider' : 'warning.main',
+                    bgcolor: notification.acknowledged ? 'background.paper' : 'rgba(245, 158, 11, 0.1)',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      borderColor: notification.acknowledged ? 'primary.main' : 'warning.light',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: notification.acknowledged ? 400 : 700,
+                          mb: 0.5
+                        }}
+                      >
+                        {notification.message || 'Alert triggered'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Rate: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{notification.triggered_rate.toFixed(4)}</Box>
+                        {' • '}
+                        {new Date(notification.created_at).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                    {!notification.acknowledged && (
+                      <IconButton
+                        size="small"
+                        onClick={() => onAcknowledge(notification.id)}
+                        sx={{ ml: 1 }}
+                      >
+                        <CheckCircle fontSize="small" />
+                      </IconButton>
+                    )}
+                  </Box>
+                </Box>
+              ))}
+            </Box>
 
-          <button
-            onClick={onViewAllClick}
-            className="mt-4 w-full py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
-          >
-            View All Notifications ({notifications.length})
-          </button>
-        </>
-      )}
-    </div>
+            <Button
+              fullWidth
+              onClick={onViewAllClick}
+              sx={{ mt: 2 }}
+              variant="outlined"
+            >
+              View All Notifications ({notifications.length})
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

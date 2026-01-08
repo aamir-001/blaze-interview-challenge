@@ -1,11 +1,15 @@
 import { useState, FormEvent } from 'react';
 import { CURRENCY_PAIRS, Alert } from '../types';
+import { Card, CardContent, Typography, Box, TextField, MenuItem, Button, Alert as MuiAlert } from '@mui/material';
+import { NotificationAdd as NotificationAddIcon } from '@mui/icons-material';
 
 interface AlertFormProps {
   onSubmit: (alert: Omit<Alert, 'id' | 'notified' | 'created_at'>) => Promise<void>;
+  error?: string | null;
+  onClearError?: () => void;
 }
 
-export default function AlertForm({ onSubmit }: AlertFormProps) {
+export default function AlertForm({ onSubmit, error, onClearError }: AlertFormProps) {
   const [currencyPair, setCurrencyPair] = useState(CURRENCY_PAIRS[0]);
   const [direction, setDirection] = useState<'above' | 'below'>('above');
   const [targetRate, setTargetRate] = useState('');
@@ -17,6 +21,10 @@ export default function AlertForm({ onSubmit }: AlertFormProps) {
     if (!targetRate || isNaN(Number(targetRate)) || Number(targetRate) <= 0) {
       alert('Please enter a valid target rate');
       return;
+    }
+
+    if (onClearError) {
+      onClearError();
     }
 
     setSubmitting(true);
@@ -33,75 +41,77 @@ export default function AlertForm({ onSubmit }: AlertFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New Alert</h2>
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+          <NotificationAddIcon color="primary" />
+          <Typography variant="h6">Create New Alert</Typography>
+        </Box>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="currency-pair" className="block text-sm font-medium text-gray-700 mb-1">
-            Currency Pair
-          </label>
-          <select
-            id="currency-pair"
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {error && (
+            <MuiAlert severity="error" onClose={onClearError}>
+              {error}
+            </MuiAlert>
+          )}
+
+          <TextField
+            select
+            label="Currency Pair"
             value={currencyPair}
             onChange={(e) => setCurrencyPair(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            fullWidth
           >
             {CURRENCY_PAIRS.map((pair) => (
-              <option key={pair} value={pair}>
+              <MenuItem key={pair} value={pair}>
                 {pair}
-              </option>
+              </MenuItem>
             ))}
-          </select>
-        </div>
+          </TextField>
 
-        <div>
-          <label htmlFor="direction" className="block text-sm font-medium text-gray-700 mb-1">
-            Alert When Rate Goes
-          </label>
-          <select
-            id="direction"
+          <TextField
+            select
+            label="Alert When Rate Goes"
             value={direction}
             onChange={(e) => setDirection(e.target.value as 'above' | 'below')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            fullWidth
           >
-            <option value="above">Above</option>
-            <option value="below">Below</option>
-          </select>
-        </div>
+            <MenuItem value="above">Above</MenuItem>
+            <MenuItem value="below">Below</MenuItem>
+          </TextField>
 
-        <div>
-          <label htmlFor="target-rate" className="block text-sm font-medium text-gray-700 mb-1">
-            Target Rate
-          </label>
-          <input
-            id="target-rate"
+          <TextField
+            label="Target Rate"
             type="number"
-            step="0.0001"
             value={targetRate}
             onChange={(e) => setTargetRate(e.target.value)}
             placeholder="e.g., 1.2500"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            fullWidth
             required
+            inputProps={{
+              step: '0.0001',
+            }}
           />
-        </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
-        >
-          {submitting ? 'Creating...' : 'Create Alert'}
-        </button>
-      </form>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={submitting}
+            fullWidth
+          >
+            {submitting ? 'Creating...' : 'Create Alert'}
+          </Button>
+        </Box>
 
-      <div className="mt-4 p-3 bg-blue-50 rounded-md">
-        <p className="text-xs text-gray-600">
-          <strong>Preview:</strong> Alert me when {currencyPair} goes{' '}
-          <span className="font-semibold">{direction}</span>{' '}
-          <span className="font-semibold">{targetRate || '___'}</span>
-        </p>
-      </div>
-    </div>
+        <MuiAlert severity="info" sx={{ mt: 3 }}>
+          <Typography variant="caption">
+            <strong>Preview:</strong> Alert me when {currencyPair} goes{' '}
+            <Box component="span" sx={{ fontWeight: 600 }}>{direction}</Box>{' '}
+            <Box component="span" sx={{ fontWeight: 600 }}>{targetRate || '___'}</Box>
+          </Typography>
+        </MuiAlert>
+      </CardContent>
+    </Card>
   );
 }
