@@ -15,7 +15,9 @@
       "Bash(findstr:*)",
       "Bash(npm run build:*)",
       "Bash(taskkill:*)",
-      "Bash(npx ts-node:*)"
+      "Bash(npx ts-node:*)",
+      "Bash(del \"frontend\\\\src\\\\components\\\\RateDashboard.tsx\" \"frontend\\\\src\\\\components\\\\NotificationList.tsx\" \"frontend\\\\src\\\\components\\\\NotificationBanner.tsx\")",
+      "Bash(ls:*)"
     ]
   }
 }

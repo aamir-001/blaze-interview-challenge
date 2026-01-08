@@ -186,23 +186,23 @@ function App() {
           </Box>
 
           {/* Three Section Layout - Horizontal */}
-          <div className="grid grid-cols-3 gap-8 mb-6">
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, mb: 3 }}>
           {/* Notifications Section - Left */}
-          <div>
+          <Box>
             <NotificationsSection
               notifications={notifications}
               onViewAllClick={() => setCurrentPage('all-notifications')}
               onAcknowledge={handleAcknowledgeNotification}
             />
-          </div>
+          </Box>
 
           {/* Live Rates Section - Middle */}
-          <div>
+          <Box>
             <LiveRatesSection />
-          </div>
+          </Box>
 
           {/* My Alerts Section - Right */}
-          <div>
+          <Box>
             <MyAlertsSection
               alerts={alerts}
               onCreateClick={() => setIsModalOpen(true)}
@@ -210,8 +210,8 @@ function App() {
               onDelete={handleDeleteAlert}
               onToggle={handleToggleAlert}
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
 
           {/* Create Alert Modal */}
           <Modal

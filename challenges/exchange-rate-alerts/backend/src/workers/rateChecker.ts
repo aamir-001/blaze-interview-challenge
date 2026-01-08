@@ -15,11 +15,11 @@ function shouldTrigger(alert: Alert, currentRate: number): boolean {
     return false;
   }
 
-  // Check threshold crossing
+  // Check threshold hit or crossing
   if (direction === 'above') {
-    return currentRate > target_rate;
+    return currentRate >= target_rate;
   } else {
-    return currentRate < target_rate;
+    return currentRate <= target_rate;
   }
 }
 
@@ -36,9 +36,9 @@ function shouldReset(alert: Alert, currentRate: number): boolean {
 
   // Check if crossed back to safe side
   if (direction === 'above') {
-    return currentRate <= target_rate; // Dropped back below
+    return currentRate < target_rate; // Dropped back below
   } else {
-    return currentRate >= target_rate; // Rose back above
+    return currentRate > target_rate; // Rose back above
   }
 }
 

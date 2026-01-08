@@ -25,23 +25,6 @@ export function getAllAlerts(userId: number): AlertWithStatus[] {
 }
 
 /**
- * Get a single alert by ID
- */
-export function getAlertById(id: number, userId: number): AlertWithStatus | null {
-  const alert = db.prepare(`
-    SELECT * FROM alerts
-    WHERE id = ? AND user_id = ?
-  `).get(id, userId) as Alert | undefined;
-
-  if (!alert) {
-    return null;
-  }
-
-  const notifications = getNotificationsByAlertIds([alert.id]);
-  return computeAlertStatus(alert, notifications);
-}
-
-/**
  * Create a new alert
  */
 export function createAlert(userId: number, data: CreateAlertRequest): Alert {
@@ -158,9 +141,3 @@ function computeAlertStatus(alert: Alert, allNotifications: Notification[]): Ale
   };
 }
 
-/**
- * Calculate distance from target as percentage
- */
-export function calculateDistanceFromTarget(currentRate: number, targetRate: number): number {
-  return ((currentRate - targetRate) / targetRate) * 100;
-}
