@@ -16,7 +16,7 @@ export interface Notification {
   message: string | null;
   acknowledged: boolean;
   acknowledged_at: string | null;
-  created_at: string;
+  triggered_at: string;
   alert?: Alert;
 }
 

@@ -68,11 +68,19 @@ export default function AllNotificationsPage({
                           Rate: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{notification.triggered_rate.toFixed(4)}</Box>
                         </Typography>
                         <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
-                          {new Date(notification.created_at).toLocaleString()}
+                          {(() => {
+                            const date = new Date(notification.triggered_at);
+                            date.setHours(date.getHours() - 5);
+                            return date.toLocaleString();
+                          })()}
                         </Typography>
                         {notification.acknowledged && notification.acknowledged_at && (
                           <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mt: 0.5 }}>
-                            Acknowledged: {new Date(notification.acknowledged_at).toLocaleString()}
+                            Acknowledged: {(() => {
+                              const date = new Date(notification.acknowledged_at);
+                              date.setHours(date.getHours() - 5);
+                              return date.toLocaleString();
+                            })()}
                           </Typography>
                         )}
                       </Box>

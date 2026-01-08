@@ -7,9 +7,34 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
+ * Configuration: Set to 1 to use real Blaze API, or 0 to use local dummy data
+ */
+const RATE_SOURCE: 0 | 1 = 0;
+const BLAZE_API_URL = 'https://api.blaze.money/currency/rates';
+
+/**
+ * Fetch current exchange rates from Blaze API
+ */
+async function fetchRatesFromBlaze(): Promise<ExchangeRates> {
+  try {
+    const response = await fetch(BLAZE_API_URL);
+
+    if (!response.ok) {
+      throw new Error(`Blaze API returned ${response.status}`);
+    }
+
+    const rates = await response.json() as ExchangeRates;
+    return rates;
+  } catch (error) {
+    console.error('Failed to fetch rates from Blaze API:', error);
+    throw new Error('Unable to fetch rates from Blaze API');
+  }
+}
+
+/**
  * Fetch current exchange rates from dummy file for testing
  */
-export async function fetchCurrentRates(): Promise<ExchangeRates> {
+async function fetchRatesFromDummy(): Promise<ExchangeRates> {
   try {
     const dummyRatesPath = path.join(__dirname, '../../dummy-rates.json');
     const rates = JSON.parse(readFileSync(dummyRatesPath, 'utf-8'));
@@ -17,6 +42,17 @@ export async function fetchCurrentRates(): Promise<ExchangeRates> {
   } catch (error) {
     console.error('Failed to read dummy rates:', error);
     throw new Error('Unable to fetch rates from dummy file');
+  }
+}
+
+/**
+ * Fetch current exchange rates based on configuration
+ */
+export async function fetchCurrentRates(): Promise<ExchangeRates> {
+  if (RATE_SOURCE === 1) {
+    return fetchRatesFromBlaze();
+  } else {
+    return fetchRatesFromDummy();
   }
 }
 

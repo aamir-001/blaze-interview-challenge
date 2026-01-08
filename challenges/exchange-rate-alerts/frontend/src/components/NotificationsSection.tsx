@@ -62,7 +62,11 @@ export default function NotificationsSection({
                       <Typography variant="caption" color="text.secondary">
                         Rate: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{notification.triggered_rate.toFixed(4)}</Box>
                         {' • '}
-                        {new Date(notification.created_at).toLocaleDateString()}
+                        {(() => {
+                          const date = new Date(notification.triggered_at);
+                          date.setHours(date.getHours() - 5);
+                          return date.toLocaleString();
+                        })()}
                       </Typography>
                     </Box>
                     {!notification.acknowledged && (
