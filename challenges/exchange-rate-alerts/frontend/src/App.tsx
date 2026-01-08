@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Alert, Notification } from './types';
 import Modal from './components/Modal';
 import AlertForm from './components/AlertForm';
-import NotificationBanner from './components/NotificationBanner';
 import MyAlertsSection from './components/MyAlertsSection';
 import NotificationsSection from './components/NotificationsSection';
 import LiveRatesSection from './components/LiveRatesSection';
@@ -144,8 +143,6 @@ function App() {
   }
 
   // Dashboard page
-  const unacknowledgedNotifications = notifications.filter(n => !n.acknowledged);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -153,12 +150,6 @@ function App() {
           <h1 className="text-3xl font-bold text-gray-900">Exchange Rate Alerts</h1>
           <p className="text-gray-600 mt-2">Monitor currency rates and get notified when targets are hit</p>
         </header>
-
-        {/* Alert Banner for unacknowledged notifications */}
-        <NotificationBanner
-          notifications={unacknowledgedNotifications}
-          onAcknowledge={handleAcknowledgeNotification}
-        />
 
         {/* Three Section Layout - Horizontal */}
         <div className="grid grid-cols-3 gap-6 mb-6">
